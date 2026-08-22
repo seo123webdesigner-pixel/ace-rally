@@ -73,3 +73,8 @@ that still needs a human eye. Newest sprint at the top.
 - `assets/`, `resources/`, and the `scenes/` and `scripts/` subfolders are empty
   placeholders. No gameplay code, no 3D scenes, per the sprint brief.
 - GUT's editor panel is enabled but untested, as it needs the editor UI.
+- `GameLog` has no unit test yet. Its level filtering and `[LEVEL][system] message`
+  format were verified by a throwaway headless probe, not by a committed test.
+  Worth a real test the first time a sprint depends on log output.
+- `GameState`, `SaveManager` and `AudioManager` are empty shells. They declare their
+  single responsibility in a doc comment and nothing else, by design for this sprint.
