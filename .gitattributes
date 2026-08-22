@@ -1,0 +1,30 @@
+# Normalise text in the repo to LF. Without this, a Windows checkout can commit
+# CRLF into scripts/verify.sh and the Linux CI runner fails with a bad interpreter.
+* text=auto eol=lf
+
+# Godot project files are text and must stay LF.
+*.gd      text eol=lf
+*.tscn    text eol=lf
+*.tres    text eol=lf
+*.godot   text eol=lf
+*.uid     text eol=lf
+*.cfg     text eol=lf
+*.sh      text eol=lf
+*.yml     text eol=lf
+
+# PowerShell is happier with CRLF on Windows.
+*.ps1     text eol=crlf
+
+# Binary assets, never touched by line-ending conversion.
+*.png     binary
+*.jpg     binary
+*.webp    binary
+*.ogg     binary
+*.wav     binary
+*.mp3     binary
+*.glb     binary
+*.gltf    binary
+*.ttf     binary
+*.otf     binary
+*.fnt     binary
+*.keystore binary

@@ -1,0 +1,47 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="Ace Rally"
+config/description="3D arcade tennis for Android. Single player against AI."
+run/main_scene="res://scenes/core/main.tscn"
+config/features=PackedStringArray("4.7", "Mobile")
+run/max_fps=60
+
+[autoload]
+
+GameState="*res://scripts/systems/game_state.gd"
+SaveManager="*res://scripts/systems/save_manager.gd"
+AudioManager="*res://scripts/systems/audio_manager.gd"
+EventBus="*res://scripts/systems/event_bus.gd"
+GameLog="*res://scripts/systems/logger.gd"
+
+[display]
+
+window/size/viewport_width=1920
+window/size/viewport_height=1080
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+window/handheld/orientation="landscape"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/gut/plugin.cfg")
+
+[physics]
+
+common/physics_ticks_per_second=60
+
+[rendering]
+
+renderer/rendering_method="mobile"
+renderer/rendering_method.mobile="mobile"
+textures/vram_compression/import_etc2_astc=true

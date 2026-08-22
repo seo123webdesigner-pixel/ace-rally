@@ -1,0 +1,52 @@
+name: verify
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  verify:
+    name: Parse check and GUT suite
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    env:
+      GODOT_VERSION: "4.7.2"
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Cache Godot binary
+        id: cache-godot
+        uses: actions/cache@v4
+        with:
+          path: ~/godot-bin
+          key: godot-${{ env.GODOT_VERSION }}-stable-linux-x86_64
+
+      - name: Download Godot ${{ env.GODOT_VERSION }} stable
+        if: steps.cache-godot.outputs.cache-hit != 'true'
+        run: |
+          set -euo pipefail
+          url="https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
+          curl -fsSL --retry 3 -o /tmp/godot.zip "$url"
+          # Confirm we got an archive and not an HTML error page before extracting.
+          file /tmp/godot.zip | grep -q 'Zip archive data'
+          unzip -q /tmp/godot.zip -d /tmp/godot-extract
+          mkdir -p "$HOME/godot-bin"
+          mv "/tmp/godot-extract/Godot_v${GODOT_VERSION}-stable_linux.x86_64" "$HOME/godot-bin/godot"
+          chmod +x "$HOME/godot-bin/godot"
+
+      - name: Put Godot on PATH
+        run: echo "$HOME/godot-bin" >> "$GITHUB_PATH"
+
+      - name: Confirm the pinned version
+        run: |
+          set -euo pipefail
+          godot --version
+          godot --version | grep -q "^${GODOT_VERSION}.stable" \
+            || { echo "expected Godot ${GODOT_VERSION}.stable"; exit 1; }
+
+      - name: Run verify.sh
+        run: bash scripts/verify.sh

@@ -1,0 +1,19 @@
+# Godot 4 editor and import caches
+.godot/
+.import/
+
+# Build output
+build/
+
+# Temporary files
+*.tmp
+
+# Android export
+android/build/
+*.keystore
+*.jks
+export_credentials.cfg
+
+# OS noise
+.DS_Store
+Thumbs.db
