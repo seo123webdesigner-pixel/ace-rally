@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="BallPhysicsConfig" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/ball_physics_config.gd" id="1_f2jco"]
+
+[resource]
+resource_name = "BallPhysicsDefault"
+script = ExtResource("1_f2jco")
+gravity = 13.5
+mass = 0.057
+radius = 0.0335
+drag_coefficient = 0.55
+air_density = 1.21
+magnus_coefficient = 0.000045
+spin_decay_per_second = 0.85
+min_bounce_speed = 0.4

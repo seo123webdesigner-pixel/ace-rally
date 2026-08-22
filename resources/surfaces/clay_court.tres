@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="CourtSurfaceConfig" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/court_surface_config.gd" id="1_3wttw"]
+
+[resource]
+resource_name = "ClayCourt"
+script = ExtResource("1_3wttw")
+surface_name = "Clay"
+surface_type = 1
+vertical_restitution = 0.7
+horizontal_friction = 0.58
+bounce_spin_transfer = 0.4
