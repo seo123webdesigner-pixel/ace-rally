@@ -15,6 +15,13 @@ GODOT="${GODOT:-godot}"
 # read the output as well as the exit code. Measured against 4.7.2.
 ERROR_PATTERN='^(SCRIPT ERROR|ERROR|USER ERROR|USER SCRIPT ERROR|FATAL):'
 
+# GUT exits 0 even when a test script fails to parse: it prints a warning, skips
+# the whole file and still reports "All tests passed". Measured on 9.7.1 during
+# Sprint 1, where a parse error in test_scenes.gd cost 10 tests silently. These
+# patterns are what turn that back into a failure.
+GUT_SKIP_PATTERN='(Ignoring script|Parse Error:|SCRIPT ERROR:)'
+GUT_SUCCESS_PATTERN='All tests passed'
+
 step_number=0
 
 banner_fail() {
@@ -65,10 +72,17 @@ echo "ok"
 
 # ------------------------------------------------------------------------------
 start_step "GUT test suite"
-"$GODOT" --headless --path . -s addons/gut/gut_cmdln.gd -gdir=res://test -ginclude_subdirs -gexit
+gut_output="$("$GODOT" --headless --path . -s addons/gut/gut_cmdln.gd -gdir=res://test -ginclude_subdirs -gexit 2>&1)"
 gut_status=$?
+echo "$gut_output"
 if [ $gut_status -ne 0 ]; then
 	banner_fail "GUT suite exited ${gut_status}"
+fi
+if echo "$gut_output" | grep -qE "$GUT_SKIP_PATTERN"; then
+	banner_fail "GUT skipped or failed to parse a test script (see output above)"
+fi
+if ! echo "$gut_output" | grep -qE "$GUT_SUCCESS_PATTERN"; then
+	banner_fail "GUT did not report success (see output above)"
 fi
 
 # ------------------------------------------------------------------------------

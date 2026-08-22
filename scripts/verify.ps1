@@ -17,6 +17,12 @@ $Godot = if ($env:GODOT) { $env:GODOT } else { 'godot' }
 # read the output as well as the exit code. Measured against 4.7.2.
 $ErrorPattern = '^(SCRIPT ERROR|ERROR|USER ERROR|USER SCRIPT ERROR|FATAL):'
 
+# GUT exits 0 even when a test script fails to parse: it prints a warning, skips
+# the whole file and still reports "All tests passed". Measured on 9.7.1 during
+# Sprint 1, where a parse error in test_scenes.gd cost 10 tests silently.
+$GutSkipPattern = '(Ignoring script|Parse Error:|SCRIPT ERROR:)'
+$GutSuccessPattern = 'All tests passed'
+
 $script:StepNumber = 0
 
 function Invoke-Godot {
@@ -81,6 +87,12 @@ $gut = Invoke-Godot '--headless --path . -s addons/gut/gut_cmdln.gd -gdir=res://
 $gut.Output | Write-Output
 if ($gut.ExitCode -ne 0) {
     Stop-WithFailure "GUT suite exited $($gut.ExitCode)"
+}
+if ($gut.Output | Select-String -Pattern $GutSkipPattern -Quiet) {
+    Stop-WithFailure 'GUT skipped or failed to parse a test script (see output above)'
+}
+if (-not ($gut.Output | Select-String -Pattern $GutSuccessPattern -Quiet)) {
+    Stop-WithFailure 'GUT did not report success (see output above)'
 }
 
 # ------------------------------------------------------------------------------
