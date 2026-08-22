@@ -1,0 +1,156 @@
+[gd_scene load_steps=9 format=3]
+
+; Placeholder court built from primitives at the real dimensions in CLAUDE.md
+; section 6. Every transform below is a scale plus a translation of one shared
+; unit BoxMesh, so the whole court costs 18 draw calls and one mesh.
+;
+; Surfaces are stacked at three different heights rather than being coplanar
+; quads, which is what keeps the lines out of a z-fight:
+;   run-off top  y = 0.000
+;   court top    y = 0.002
+;   line top     y = 0.005
+; Each of those is a 0.20 m thick box sunk into the ground, so no two faces in
+; the scene ever share a plane.
+;
+; Lines are painted INSIDE their measurement, because a court is measured to the
+; outer edge of its lines. A baseline at z = 11.885 therefore has its centre at
+; 11.860, half a line width in.
+
+[ext_resource type="Script" path="res://scripts/gameplay/court.gd" id="1_court"]
+[ext_resource type="Resource" path="res://resources/surfaces/hard_court.tres" id="2_surface"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_unit"]
+size = Vector3(1, 1, 1)
+
+[sub_resource type="StandardMaterial3D" id="Mat_runoff"]
+albedo_color = Color(0.15, 0.26, 0.21, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="Mat_court"]
+albedo_color = Color(0.2, 0.36, 0.56, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="Mat_line"]
+albedo_color = Color(0.93, 0.94, 0.93, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="Mat_net"]
+albedo_color = Color(0.11, 0.11, 0.13, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="Mat_post"]
+albedo_color = Color(0.25, 0.25, 0.29, 1)
+roughness = 0.7
+
+[node name="Court" type="Node3D"]
+script = ExtResource("1_court")
+surface = ExtResource("2_surface")
+
+[node name="Ground" type="MeshInstance3D" parent="."]
+transform = Transform3D(17.97, 0, 0, 0, 0.2, 0, 0, 0, 34.77, 0, -0.1, 0)
+mesh = SubResource("BoxMesh_unit")
+cast_shadow = 0
+surface_material_override/0 = SubResource("Mat_runoff")
+
+[node name="PlayingSurface" type="MeshInstance3D" parent="."]
+transform = Transform3D(10.97, 0, 0, 0, 0.2, 0, 0, 0, 23.77, 0, -0.098, 0)
+mesh = SubResource("BoxMesh_unit")
+cast_shadow = 0
+surface_material_override/0 = SubResource("Mat_court")
+
+[node name="Lines" type="Node3D" parent="."]
+
+[node name="BaselineNear" type="MeshInstance3D" parent="Lines"]
+transform = Transform3D(10.97, 0, 0, 0, 0.2, 0, 0, 0, 0.05, 0, -0.095, 11.86)
+mesh = SubResource("BoxMesh_unit")
+cast_shadow = 0
+surface_material_override/0 = SubResource("Mat_line")
+
+[node name="BaselineFar" type="MeshInstance3D" parent="Lines"]
+transform = Transform3D(10.97, 0, 0, 0, 0.2, 0, 0, 0, 0.05, 0, -0.095, -11.86)
+mesh = SubResource("BoxMesh_unit")
+cast_shadow = 0
+surface_material_override/0 = SubResource("Mat_line")
+
+[node name="DoublesSidelineLeft" type="MeshInstance3D" parent="Lines"]
+transform = Transform3D(0.05, 0, 0, 0, 0.2, 0, 0, 0, 23.77, -5.46, -0.095, 0)
+mesh = SubResource("BoxMesh_unit")
+cast_shadow = 0
+surface_material_override/0 = SubResource("Mat_line")
+
+[node name="DoublesSidelineRight" type="MeshInstance3D" parent="Lines"]
+transform = Transform3D(0.05, 0, 0, 0, 0.2, 0, 0, 0, 23.77, 5.46, -0.095, 0)
+mesh = SubResource("BoxMesh_unit")
+cast_shadow = 0
+surface_material_override/0 = SubResource("Mat_line")
+
+[node name="SinglesSidelineLeft" type="MeshInstance3D" parent="Lines"]
+transform = Transform3D(0.05, 0, 0, 0, 0.2, 0, 0, 0, 23.77, -4.09, -0.095, 0)
+mesh = SubResource("BoxMesh_unit")
+cast_shadow = 0
+surface_material_override/0 = SubResource("Mat_line")
+
+[node name="SinglesSidelineRight" type="MeshInstance3D" parent="Lines"]
+transform = Transform3D(0.05, 0, 0, 0, 0.2, 0, 0, 0, 23.77, 4.09, -0.095, 0)
+mesh = SubResource("BoxMesh_unit")
+cast_shadow = 0
+surface_material_override/0 = SubResource("Mat_line")
+
+[node name="ServiceLineNear" type="MeshInstance3D" parent="Lines"]
+transform = Transform3D(8.23, 0, 0, 0, 0.2, 0, 0, 0, 0.05, 0, -0.095, 6.375)
+mesh = SubResource("BoxMesh_unit")
+cast_shadow = 0
+surface_material_override/0 = SubResource("Mat_line")
+
+[node name="ServiceLineFar" type="MeshInstance3D" parent="Lines"]
+transform = Transform3D(8.23, 0, 0, 0, 0.2, 0, 0, 0, 0.05, 0, -0.095, -6.375)
+mesh = SubResource("BoxMesh_unit")
+cast_shadow = 0
+surface_material_override/0 = SubResource("Mat_line")
+
+[node name="CentreServiceLine" type="MeshInstance3D" parent="Lines"]
+transform = Transform3D(0.05, 0, 0, 0, 0.2, 0, 0, 0, 12.8, 0, -0.095, 0)
+mesh = SubResource("BoxMesh_unit")
+cast_shadow = 0
+surface_material_override/0 = SubResource("Mat_line")
+
+[node name="CentreMarkNear" type="MeshInstance3D" parent="Lines"]
+transform = Transform3D(0.05, 0, 0, 0, 0.2, 0, 0, 0, 0.1, 0, -0.095, 11.835)
+mesh = SubResource("BoxMesh_unit")
+cast_shadow = 0
+surface_material_override/0 = SubResource("Mat_line")
+
+[node name="CentreMarkFar" type="MeshInstance3D" parent="Lines"]
+transform = Transform3D(0.05, 0, 0, 0, 0.2, 0, 0, 0, 0.1, 0, -0.095, -11.835)
+mesh = SubResource("BoxMesh_unit")
+cast_shadow = 0
+surface_material_override/0 = SubResource("Mat_line")
+
+[node name="Net" type="Node3D" parent="."]
+
+[node name="SegmentCentre" type="MeshInstance3D" parent="Net"]
+transform = Transform3D(4.266, 0, 0, 0, 0.914, 0, 0, 0, 0.02, 0, 0.457, 0)
+mesh = SubResource("BoxMesh_unit")
+surface_material_override/0 = SubResource("Mat_net")
+
+[node name="SegmentLeft" type="MeshInstance3D" parent="Net"]
+transform = Transform3D(4.266, 0, 0, 0, 0.9833, 0, 0, 0, 0.02, -4.266, 0.49165, 0)
+mesh = SubResource("BoxMesh_unit")
+surface_material_override/0 = SubResource("Mat_net")
+
+[node name="SegmentRight" type="MeshInstance3D" parent="Net"]
+transform = Transform3D(4.266, 0, 0, 0, 0.9833, 0, 0, 0, 0.02, 4.266, 0.49165, 0)
+mesh = SubResource("BoxMesh_unit")
+surface_material_override/0 = SubResource("Mat_net")
+
+[node name="Posts" type="Node3D" parent="."]
+
+[node name="PostLeft" type="MeshInstance3D" parent="Posts"]
+transform = Transform3D(0.1, 0, 0, 0, 1.07, 0, 0, 0, 0.1, -6.399, 0.535, 0)
+mesh = SubResource("BoxMesh_unit")
+surface_material_override/0 = SubResource("Mat_post")
+
+[node name="PostRight" type="MeshInstance3D" parent="Posts"]
+transform = Transform3D(0.1, 0, 0, 0, 1.07, 0, 0, 0, 0.1, 6.399, 0.535, 0)
+mesh = SubResource("BoxMesh_unit")
+surface_material_override/0 = SubResource("Mat_post")
